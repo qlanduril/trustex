@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3001:3000" # Map port 3001 on the host to port 3000 in the container
+    environment:
+      - PORT=3000
+    networks:
+      - trustex-network
+    # Optional: network alias for easier inter-service communication
+    container_name: trustex_fe
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "3002:8080" # Map port 3002 on the host to port 3000 in the container
+    environment:
+      - PORT=8080
+    networks:
+      - trustex-network
+    # Optional: network alias for easier inter-service communication
+    container_name: trustex_be
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-preview-ubuntu-22.04
+    container_name: mssql_container
+    hostname: mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Password0-
+      - MSSQL_PID=Evaluation
+    ports:
+      - "1433:1433" # Map port 1433 on the host to port 1433 in the container
+    networks:
+      - trustex-network
+    restart: "no" # no auto restrat
+
+networks:
+  trustex-network:
+    driver: bridge
